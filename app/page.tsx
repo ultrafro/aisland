@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { FlexCol, UIButton } from "./UILibrary";
+import { generateVideo, GenerateVideoRequestBody } from "./generateVideoPika";
 
 export default function Home() {
   // State for uploaded image
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string>("");
 
@@ -46,8 +48,8 @@ export default function Home() {
     alert("Form submitted. Integrate your AI logic here!");
   };
 
-  const generateVideo = async () => {
-    const token = "YOUR_BEARER_TOKEN";
+  const onGenerateVideo = async () => {
+    const token = "4742b7d4-ad2e-4296-9328-24bcb027c1ef";
 
     // For model 1.0
     const requestBody: GenerateVideoRequestBody = {
@@ -120,7 +122,7 @@ export default function Home() {
           padding: "2rem",
         }}
       >
-        <UIButton onClick={generateVideo}>Generate Video</UIButton>
+        <UIButton onClick={onGenerateVideo}>Generate Video</UIButton>
 
         <h1>AI-Powered Love Game Show</h1>
         <p>Upload a photo and answer 20 questions!</p>
