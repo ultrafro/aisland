@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FlexCol } from "./UILibrary";
+import { FlexCol, UIButton } from "./UILibrary";
 
 export default function Home() {
   // State for uploaded image
@@ -46,6 +46,39 @@ export default function Home() {
     alert("Form submitted. Integrate your AI logic here!");
   };
 
+  const generateVideo = async () => {
+    const token = "YOUR_BEARER_TOKEN";
+
+    // For model 1.0
+    const requestBody: GenerateVideoRequestBody = {
+      promptText: "robed villain lurking the streets",
+      model: "1.0", // or omit if the default is 1.0
+      image: "https://example.image/1234-a186-53c4c6171ab5/image.jpg",
+      sfx: true,
+      style: "Anime",
+      options: {
+        aspectRatio: "16:9",
+        frameRate: 24,
+        camera: {
+          rotate: null,
+          zoom: null,
+          tilt: null,
+          pan: null,
+        },
+        parameters: {
+          guidanceScale: 12,
+          motion: 1,
+          negativePrompt: "",
+          seed: null,
+        },
+        extend: false,
+      },
+    };
+
+    const result = await generateVideo(token, requestBody);
+    console.log("Video generation response:", result);
+  };
+
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
       {/* Full-screen intro video */}
@@ -87,6 +120,8 @@ export default function Home() {
           padding: "2rem",
         }}
       >
+        <UIButton onClick={generateVideo}>Generate Video</UIButton>
+
         <h1>AI-Powered Love Game Show</h1>
         <p>Upload a photo and answer 20 questions!</p>
 
