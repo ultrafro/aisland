@@ -1,13 +1,28 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FlexCol } from "./UILibrary";
+import { FlexCol, UIButton } from "./UILibrary";
 import KlingTest from "./KlingTest";
+import { Asset } from "./island.model";
+import Requests from "./Requests";
+import {
+  convertToDataURL,
+  getAudio,
+  getPhotoRemoved,
+  getPhotoReplaced,
+  uploadToGCS,
+} from "./requestFunctions";
+import { nanoid } from "nanoid";
+import { get } from "http";
 
 export default function Home() {
   // State for uploaded image
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string>("");
+
+  const [requests, setRequests] = useState<Record<string, Asset>>({});
+
+  const [visible, setVisible] = useState(false);
 
   // State for questions
   const [answers, setAnswers] = useState<string[]>(Array(20).fill(""));
@@ -47,6 +62,113 @@ export default function Home() {
     // You can add custom logic here, e.g. sending data to an API
     alert("Form submitted. Integrate your AI logic here!");
   };
+
+  const start = async () => {
+    const text = "Hey I'm Andy and I'm looking for love!";
+
+    //get photo datastring from file
+    const photo = await convertToDataURL(imageFile as File);
+
+    // const uploadedImage = await uploadToGCS(
+    //   photo,
+    //   "love-game-show",
+    //   "photo.png"
+    // );
+
+    const removed = await getPhotoRemoved(photo);
+
+    const combined = await getPhotoReplaced(removed, "/bg.PNG");
+
+    //upload combined to gcs
+
+    const uploadedImage = await uploadToGCS(
+      combined,
+      "love-game-show",
+      "photo.png"
+    );
+
+    //get request id
+    const rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
+    // let rid = await fetch("/api/makeKlingRequest", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     prompt: "man doing an interview",
+    //     imageUrl: uploadedImage,
+    //   }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(async () => {
+        const response = await fetch("/api/checkKllingRquest", {
+          method: "POST",
+          body: JSON.stringify({
+            requestId: rid,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        const { status } = data;
+
+        console.log("Status:", status);
+        // setStatus(status.status + " " + Date.now());
+
+        if (status.status === "COMPLETED") {
+          // fetchResult(rid);
+          // setRequestId("");
+          clearInterval(interval);
+          resolve();
+        }
+      }, 5000);
+    });
+
+    //get final video
+    const response = await fetch("/api/fetchKlingResult", {
+      method: "POST",
+      body: JSON.stringify({
+        requestId: rid,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response2 = await response.json();
+    const videoResult = response2.data.video.url;
+
+    console.log("videoResult", videoResult);
+
+    const audio = await getAudio(text);
+    audioref.current?.setAttribute("src", audio);
+    audioref.current?.play();
+    console.log("audio", audio);
+
+    const newAsset: Asset = {
+      id: nanoid(),
+      introVideo: videoResult,
+      introVideoLoading: false,
+      photo: photo,
+      photoBGreplced: uploadedImage,
+      photoBGreplcedLoading: false,
+      introAudio: "",
+      introAudioLoading: false,
+    };
+
+    setRequests({ ...requests, [newAsset.id]: newAsset });
+
+    // get initial script
+    // get initial audio
+    // get photo with bg removed
+    // get photo with replaced bg
+    // get video
+  };
+
+  const audioref = React.useRef<HTMLAudioElement>(null);
 
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
@@ -92,6 +214,19 @@ export default function Home() {
         {/* <UIButton onClick={onGenerateVideoKling}>Generate Video</UIButton> */}
 
         <KlingTest />
+
+        <UIButton
+          onClick={() => {
+            setVisible(!visible);
+          }}
+        >
+          View Requests
+        </UIButton>
+        <audio ref={audioref} />
+
+        {visible && <Requests requests={requests} />}
+
+        <UIButton onClick={start}>Start</UIButton>
 
         <h1>AI-Powered Love Game Show</h1>
         <p>Upload a photo and answer 20 questions!</p>
