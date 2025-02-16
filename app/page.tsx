@@ -12,7 +12,6 @@ import {
   uploadToGCS,
 } from "./requestFunctions";
 import { nanoid } from "nanoid";
-import { get } from "http";
 
 export default function Home() {
   // State for uploaded image
