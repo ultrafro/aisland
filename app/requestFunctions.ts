@@ -163,6 +163,42 @@ export async function convertToDataURL(file: File): Promise<string> {
   });
 }
 
+// export async function uploadToGCS(
+//     base64Image: string,
+//     bucketName: string,
+//     fileName: string
+//   ): Promise<string> {
+//     // 1. Create the Storage instance (if you haven't already done so globally)
+//     const storage = new Storage({
+//       projectId: 'YOUR-PROJECT-ID',
+//       keyFilename: 'path/to/service-account.json',
+//     });
+
+//     // 2. Reference the bucket
+//     const bucket = storage.bucket(bucketName);
+
+//     // 3. Create a file reference
+//     const file = bucket.file(fileName);
+
+//     // 4. Convert base64 string (data URI) to buffer
+//     const base64String = base64Image.replace(/^data:image\/\w+;base64,/, '');
+//     const buffer = Buffer.from(base64String, 'base64');
+
+//     // 5. Save buffer to GCS
+//     await file.save(buffer, {
+//       metadata: {
+//         contentType: 'image/png', // or detect dynamically
+//       },
+//       resumable: false,
+//     });
+
+//     // 6. (Optional) Make the file public
+//     await file.makePublic();
+
+//     // 7. Return the public URL
+//     return `https://storage.googleapis.com/${bucketName}/${fileName}`;
+//   }
+
 export async function uploadToGCS(
   img: string,
   bucketName: string,
