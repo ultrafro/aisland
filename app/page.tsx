@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FlexCol, UIButton } from "./UILibrary";
-import { generateVideo, GenerateVideoRequestBody } from "./generateVideoPika";
+import { FlexCol } from "./UILibrary";
 import KlingTest from "./KlingTest";
 
 export default function Home() {
@@ -47,56 +46,6 @@ export default function Home() {
     e.preventDefault();
     // You can add custom logic here, e.g. sending data to an API
     alert("Form submitted. Integrate your AI logic here!");
-  };
-
-  const onGenerateVideo = async () => {
-    const token = "4742b7d4-ad2e-4296-9328-24bcb027c1ef";
-
-    // For model 1.0
-    const requestBody: GenerateVideoRequestBody = {
-      promptText: "man doing an interview",
-      model: "1.0", // or omit if the default is 1.0
-      image: "https://aisland.vercel.app/andybg.JPG",
-      sfx: true,
-      style: "Anime",
-      options: {
-        aspectRatio: "16:9",
-        frameRate: 24,
-        camera: {
-          rotate: null,
-          zoom: null,
-          tilt: null,
-          pan: null,
-        },
-        parameters: {
-          guidanceScale: 12,
-          motion: 1,
-          negativePrompt: "",
-          seed: null,
-        },
-        extend: false,
-      },
-    };
-
-    const result = await generateVideo(token, requestBody);
-    console.log("Video generation response:", result);
-  };
-
-  const onGenerateVideoKling = async () => {
-    //make posst request to /api/kling
-    const response = await fetch("/api/kling", {
-      method: "POST",
-      body: JSON.stringify({
-        prompt: "man doing an interview",
-        imageUrl: "https://aisland.vercel.app/andybg.JPG",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-    console.log(data);
   };
 
   return (
