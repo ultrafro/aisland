@@ -6,29 +6,8 @@ const openai = new OpenAI({ apiKey: process.env["OPENAI_API_KEY"] });
 const profilePrompt = `
 We’re creating a prototype of a Love Island simulator game, where players can see their AI generated avatars fall in love with other characters. You are a world-class character writer and game designer who is creating well rounded AI character personas based off of an intake form that was patterned off of 36 questions to fall in love.
 
-Here is an example of answered questions:
-What is your name?
-Andy
-What do you do for a living?
-I am the CEO of Ramen VR. We are a VC Backed game company that made the smash hit Zenith: The Last City. I’ve spent my career working in tech and product on cutting edge games. My day to day is mostly product management and setting the direction and vision for the company
-What do you do for fun:
-Video Games, Anime, Cats, Running
-What traits are important to you in an ideal partner?
-Someone who is down to earth and kind, while being open to adventure. Someone I can trust to be there for me when the going gets tough – and also someone I can go through life laughing with.
-What is the greatest accomplishment of your life?
-Shipping Zenith to worldwide acclaim and hitting the top of the steam charts
-What is your most treasured memory?
-Bringing my grey tabby rescue kitten ding ding home for the first time
-What is your most terrible memory?
-Breaking up with my ex
-Describe yourself in 50 words or less.
-I am an ambitious tech entrepreneur with a nerdy streak. I love geek culture, especially videogames and anime, and have created a lifestyle for myself that reflects this. I also care a lot about mindfulness and physical fitness. I enjoy pushing myself to the limit – am a marathon runner, and am also practicing martial arts.
-What do you do for a living?
-I am the CEO of Ramen VR. We are a VC Backed game company that made the smash hit Zenith: The Last City. I’ve spent my career working in tech and product on cutting edge games. My day to day is mostly product management and setting the direction and vision for the company
-Sexuality:
-Straight
-Gender:
-Male
+Here are the answered questions:
+{{QUESTIONARE}}
 
 Imagine another 5 interesting AI avatars based off of this providing both the questions and answers again, give me the character above plus the 5 characters in JSON form so i can feed that into another prompt, add a field “Generated” which is a bool defining whether this was AI generated or not:
 `;
@@ -44,7 +23,7 @@ const profileSchema = {
                 "items": { "$ref": "#/$defs/profile" }
             },
         },
-        "required": [ "properties" ],
+        "required": [ "profiles" ],
         "additionalProperties": false,
         "$defs": {
             "profile": {
@@ -172,7 +151,7 @@ const dialougeIntroSchema = {
                 "items": { "$ref": "#/$defs/line" }
             },
         },
-        "required": [ "properties" ],
+        "required": [ "dialogue" ],
         "additionalProperties": false,
         "$defs": {
             "line": {
@@ -191,7 +170,7 @@ const dialougeIntroSchema = {
 async function GetJson(prompt: string, schema: any) : Promise<string> {
     const model = {
         service: "openai",
-        version: "gpt-4o",
+        version: "gpt-4o-mini",
     };
 
     const completion = await openai.chat.completions.create({
@@ -205,13 +184,19 @@ async function GetJson(prompt: string, schema: any) : Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-    let profileJson = await GetJson(profilePrompt, profileSchema);
-    let profiles : Array<Record<string, any>> = <any>JSON.parse(profileJson);
+    let requestJSON = await req.json();
+    let questionare = requestJSON['questionare'];
+
+    let profileJson = await GetJson(profilePrompt.replace("{{QUESTIONARE}}", questionare), profileSchema);
+    let profiles : Array<Record<string, any>> = <any>JSON.parse(profileJson)["profiles"];
     
     let interestJson = await GetJson(interestsPrompt.replace('{{JSON_PAYLOAD}}', profileJson), interestSchema);
-    let interests: Array<Record<string, any>> = <any>JSON.parse(interestJson);
+    let interests: Array<Record<string, any>> = <any>JSON.parse(interestJson)["interests"];
 
     let fullProfiles = [];
+
+    console.log(profileJson);
+    console.log(interestJson);
 
     for (let profile of profiles) {
         let foundInterest : null | any = null;
