@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FlexCol, UIButton } from "./UILibrary";
-import { generateVideo, GenerateVideoRequestBody } from "./generateVideoPika";
+import { FlexCol } from "./UILibrary";
+import KlingTest from "./KlingTest";
 
 export default function Home() {
   // State for uploaded image
@@ -48,39 +48,6 @@ export default function Home() {
     alert("Form submitted. Integrate your AI logic here!");
   };
 
-  const onGenerateVideo = async () => {
-    const token = "4742b7d4-ad2e-4296-9328-24bcb027c1ef";
-
-    // For model 1.0
-    const requestBody: GenerateVideoRequestBody = {
-      promptText: "robed villain lurking the streets",
-      model: "1.0", // or omit if the default is 1.0
-      image: "https://example.image/1234-a186-53c4c6171ab5/image.jpg",
-      sfx: true,
-      style: "Anime",
-      options: {
-        aspectRatio: "16:9",
-        frameRate: 24,
-        camera: {
-          rotate: null,
-          zoom: null,
-          tilt: null,
-          pan: null,
-        },
-        parameters: {
-          guidanceScale: 12,
-          motion: 1,
-          negativePrompt: "",
-          seed: null,
-        },
-        extend: false,
-      },
-    };
-
-    const result = await generateVideo(token, requestBody);
-    console.log("Video generation response:", result);
-  };
-
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
       {/* Full-screen intro video */}
@@ -122,7 +89,9 @@ export default function Home() {
           padding: "2rem",
         }}
       >
-        <UIButton onClick={onGenerateVideo}>Generate Video</UIButton>
+        {/* <UIButton onClick={onGenerateVideoKling}>Generate Video</UIButton> */}
+
+        <KlingTest />
 
         <h1>AI-Powered Love Game Show</h1>
         <p>Upload a photo and answer 20 questions!</p>
