@@ -46,57 +46,55 @@ The Schema should match this:
   }
 }
 
-`
-
-;
+`;
 
 const profileSchema = {
-    "name": "profile",
-    "strict": true,
-    "schema": {
-        "type": "object",
-        "properties": {
-            "profiles": {
-                "type": "array",
-                "items": { "$ref": "#/$defs/profile" }
-            },
+  name: "profile",
+  strict: true,
+  schema: {
+    type: "object",
+    properties: {
+      profiles: {
+        type: "array",
+        items: { $ref: "#/$defs/profile" },
+      },
+    },
+    required: ["profiles"],
+    additionalProperties: false,
+    $defs: {
+      profile: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          occupation: { type: "string" },
+          funActivities: { type: "string" },
+          idealPartnerTraits: { type: "string" },
+          greatestAccomplishment: { type: "string" },
+          mostTreasuredMemory: { type: "string" },
+          mostTerribleMemory: { type: "string" },
+          selfDescription: { type: "string" },
+          sexuality: { type: "string" },
+          gender: { type: "string" },
+          generated: { type: "boolean" },
         },
-        "required": [ "profiles" ],
-        "additionalProperties": false,
-        "$defs": {
-            "profile": {
-                "type": "object",
-                "properties": {
-                    "name": { "type": "string" },
-                    "occupation": { "type": "string" },
-                    "funActivities": { "type": "string" },
-                    "idealPartnerTraits": { "type": "string" },
-                    "greatestAccomplishment": { "type": "string" },
-                    "mostTreasuredMemory": { "type": "string" },
-                    "mostTerribleMemory": { "type": "string" },
-                    "selfDescription": { "type": "string" },
-                    "sexuality": { "type": "string" },
-                    "gender": { "type": "string" },
-                    "generated": { "type": "boolean" }
-                },
-                "required": [
-                    "name",
-                    "occupation",
-                    "funActivities",
-                    "idealPartnerTraits",
-                    "greatestAccomplishment",
-                    "mostTreasuredMemory",
-                    "mostTerribleMemory",
-                    "selfDescription",
-                    "sexuality",
-                    "gender",
-                    "generated"
-                ],
-                "additionalProperties": false
-            }
-        }
-    }
-}
+        required: [
+          "name",
+          "occupation",
+          "funActivities",
+          "idealPartnerTraits",
+          "greatestAccomplishment",
+          "mostTreasuredMemory",
+          "mostTerribleMemory",
+          "selfDescription",
+          "sexuality",
+          "gender",
+          "generated",
+        ],
+        additionalProperties: false,
+      },
+    },
+  },
+};
 
 const interestsPrompt = `
 We’re creating a prototype of a Love Island simulator game, where players can see their AI generated avatars fall in love with other characters. You are a world-class character writer and game designer who is creating well rounded AI character personas based off of an intake form that was patterned off of 36 questions to fall in love.
@@ -119,56 +117,56 @@ You are to format your output according to this schema:
 `;
 
 const interestSchema = {
-    "name": "interests",
-    "strict": true,
-    "schema": {
-        "type": "object",
-        "properties": {
-            "interests": {
-                "type": "array",
-                "items": { "$ref": "#/$defs/interest" }
-            },
+  name: "interests",
+  strict: true,
+  schema: {
+    type: "object",
+    properties: {
+      interests: {
+        type: "array",
+        items: { $ref: "#/$defs/interest" },
+      },
+    },
+    required: ["interests"],
+    additionalProperties: false,
+    $defs: {
+      interest: {
+        type: "object",
+        properties: {
+          generated: { type: "boolean" },
+          name: { type: "string" },
+          personalityTraits: {
+            type: "array",
+            items: { type: "string" },
+          },
+          likes: {
+            type: "array",
+            items: { type: "string" },
+          },
+          dislikes: {
+            type: "array",
+            items: { type: "string" },
+          },
+          hobbies: {
+            type: "array",
+            items: { type: "string" },
+          },
+          history: { type: "string" },
         },
-        "required": [ "interests" ],
-        "additionalProperties": false,
-        "$defs": {
-            "interest": {
-                "type": "object",
-                "properties": {
-                    "generated": { "type": "boolean" },
-                    "name": { "type": "string" },
-                    "personalityTraits": {
-                        "type": "array",
-                        "items": { "type": "string" },
-                    },
-                    "likes": {
-                        "type": "array",
-                        "items": { "type": "string" },
-                    },
-                    "dislikes": {
-                        "type": "array",
-                        "items": { "type": "string" },
-                    },
-                    "hobbies": {
-                        "type": "array",
-                        "items": { "type": "string" },
-                    },
-                    "history": { "type": "string" },
-                },
-                "required": [
-                    "name",
-                    "personalityTraits",
-                    "likes",
-                    "dislikes",
-                    "hobbies",
-                    "history",
-                    "generated"
-                ],
-                additionalProperties: false
-            }
-        }
-    }
-}
+        required: [
+          "name",
+          "personalityTraits",
+          "likes",
+          "dislikes",
+          "hobbies",
+          "history",
+          "generated",
+        ],
+        additionalProperties: false,
+      },
+    },
+  },
+};
 
 const dialogueIntroPrompt = `
 We’re creating a prototype of a Love Island simulator game, where players can see their AI generated avatars fall in love with other characters. You are a world-class character writer and game designer who is creating well rounded AI character personas based off of an intake form that was patterned off of 36 questions to fall in love.
@@ -190,86 +188,105 @@ Follow this schema:
 `;
 
 const dialougeIntroSchema = {
-    "name": "dialogueIntro",
-    "strict": true,
-    "schema": {
-        "type": "object",
-        "properties": {
-            "dialogue": {
-                "type": "array",
-                "items": { "$ref": "#/$defs/line" }
-            },
+  name: "dialogueIntro",
+  strict: true,
+  schema: {
+    type: "object",
+    properties: {
+      dialogue: {
+        type: "array",
+        items: { $ref: "#/$defs/line" },
+      },
+    },
+    required: ["dialogue"],
+    additionalProperties: false,
+    $defs: {
+      line: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          dialogue: { type: "string" },
         },
-        "required": [ "dialogue" ],
-        "additionalProperties": false,
-        "$defs": {
-            "line": {
-                "type": "object",
-                "properties": {
-                    "name": { "type": "string" },
-                    "dialogue": { "type": "string" },
-                },
-                "required": [ "name", "dialogue" ],
-                "additionalProperties": false
-            }
-        }
-    }
-}
+        required: ["name", "dialogue"],
+        additionalProperties: false,
+      },
+    },
+  },
+};
 
-async function GetJson(prompt: string, schema: any) : Promise<string> {
-    const model = {
-        service: "openai",
-        version: "gpt-4o-mini",
-    };
+async function GetJson(prompt: string, schema: any): Promise<string> {
+  const model = {
+    service: "openai",
+    version: "gpt-4o-mini",
+  };
 
-    const completion = await openai.chat.completions.create({
-        messages: [ { role: "system", content: prompt } ],
-        model: model["version"] || "gpt-4o-mini",
-        response_format: { type: "json_schema", json_schema: schema },
-        temperature: 0.5,
-    });
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "system", content: prompt }],
+    model: model["version"] || "gpt-4o-mini",
+    response_format: { type: "json_schema", json_schema: schema },
+    temperature: 0.5,
+  });
 
-    return completion.choices[0]?.message?.content || "{}";
+  return completion.choices[0]?.message?.content || "{}";
 }
 
 export async function POST(req: NextRequest) {
-    let requestJSON = await req.json();
-    let questionare = requestJSON['questionare'];
+  let requestJSON = await req.json();
+  let questionare = requestJSON["questionare"];
 
-    let profileJson = await GetJson(profilePrompt.replace("{{QUESTIONARE}}", questionare), profileSchema);
-    let profiles : Array<Record<string, any>> = <any>JSON.parse(profileJson)["profiles"];
-    
-    let interestJson = await GetJson(interestsPrompt.replace('{{JSON_PAYLOAD}}', profileJson), interestSchema);
-    let interests: Array<Record<string, any>> = <any>JSON.parse(interestJson)["interests"];
+  console.log(questionare);
 
-    let fullProfiles = [];
+  let profileJson = await GetJson(
+    profilePrompt.replace("{{QUESTIONARE}}", questionare),
+    profileSchema
+  );
+  let profiles: Array<Record<string, any>> = <any>(
+    JSON.parse(profileJson)["profiles"]
+  );
 
-    console.log(profileJson);
-    console.log(interestJson);
+  let interestJson = await GetJson(
+    interestsPrompt.replace("{{JSON_PAYLOAD}}", profileJson),
+    interestSchema
+  );
+  let interests: Array<Record<string, any>> = <any>(
+    JSON.parse(interestJson)["interests"]
+  );
 
-    for (let profile of profiles) {
-        let foundInterest : null | any = null;
-        
-        for (let interest of interests) {
-            if (profile["name"] === interest["name"]) {
-                foundInterest = interest;
-                break;
-            }
-        }
+  let fullProfiles = [];
 
-        if (foundInterest != null) {
-            fullProfiles.push({...profile, ...foundInterest});
-        }
-        else {
-            fullProfiles.push(profile);
-        }
+  console.log(profileJson);
+  console.log(interestJson);
+
+  for (let profile of profiles) {
+    let foundInterest: null | any = null;
+
+    for (let interest of interests) {
+      if (profile["name"] === interest["name"]) {
+        foundInterest = interest;
+        break;
+      }
     }
 
-    let introDialogueJson = await GetJson(dialogueIntroPrompt.replace("{{JSON_PAYLOAD}}", JSON.stringify(fullProfiles, null, 2)), dialougeIntroSchema);
-    let introDialogue : Array<Record<string, any>> = <any>JSON.parse(introDialogueJson);
+    if (foundInterest != null) {
+      fullProfiles.push({ ...profile, ...foundInterest });
+    } else {
+      fullProfiles.push(profile);
+    }
+  }
 
-    return NextResponse.json(
-        { result: {profiles: fullProfiles, introDialogue: introDialogue } },
-        { status: 200 }
-    );
+  let introDialogueJson = await GetJson(
+    dialogueIntroPrompt.replace(
+      "{{JSON_PAYLOAD}}",
+      JSON.stringify(fullProfiles, null, 2)
+    ),
+    dialougeIntroSchema
+  );
+  let introDialogue: Array<Record<string, any>> = <any>(
+    JSON.parse(introDialogueJson)
+  );
+
+  return NextResponse.json(
+    { result: { profiles: fullProfiles, introDialogue: introDialogue } },
+    { status: 200 }
+  );
 }

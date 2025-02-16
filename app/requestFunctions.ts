@@ -4,6 +4,7 @@ import "firebase/compat/firestore";
 import "firebase/compat/database";
 import "firebase/compat/storage";
 import { nanoid } from "nanoid";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -163,41 +164,36 @@ export async function convertToDataURL(file: File): Promise<string> {
   });
 }
 
-// export async function uploadToGCS(
-//     base64Image: string,
-//     bucketName: string,
-//     fileName: string
-//   ): Promise<string> {
-//     // 1. Create the Storage instance (if you haven't already done so globally)
-//     const storage = new Storage({
-//       projectId: 'YOUR-PROJECT-ID',
-//       keyFilename: 'path/to/service-account.json',
-//     });
+export async function uploadBase64ImageToFileIO(base64String: string) {
+  const response = await fetch("https://file.io/?expires=1w", {
+    method: "POST",
+    body: JSON.stringify({
+      base64: base64String,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-//     // 2. Reference the bucket
-//     const bucket = storage.bucket(bucketName);
+  const result = await response.json();
+  return result.link;
+}
 
-//     // 3. Create a file reference
-//     const file = bucket.file(fileName);
+export async function uploadBase64Image(
+  base64String: string,
+  filePath: string
+) {
+  // 1. Create a reference to the file in Firebase Storage
+  const fileRef = ref(storage, filePath);
 
-//     // 4. Convert base64 string (data URI) to buffer
-//     const base64String = base64Image.replace(/^data:image\/\w+;base64,/, '');
-//     const buffer = Buffer.from(base64String, 'base64');
+  // 2. Upload the base64 string (data_url) to this file reference
+  // You can also specify 'base64' or 'base64url' if needed
+  await uploadString(fileRef, base64String, "data_url");
 
-//     // 5. Save buffer to GCS
-//     await file.save(buffer, {
-//       metadata: {
-//         contentType: 'image/png', // or detect dynamically
-//       },
-//       resumable: false,
-//     });
-
-//     // 6. (Optional) Make the file public
-//     await file.makePublic();
-
-//     // 7. Return the public URL
-//     return `https://storage.googleapis.com/${bucketName}/${fileName}`;
-//   }
+  // 3. Get the download URL
+  const downloadURL = await getDownloadURL(fileRef);
+  return downloadURL;
+}
 
 export async function uploadToGCS(
   img: string,

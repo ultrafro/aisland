@@ -9,15 +9,22 @@ import {
   getAudio,
   getPhotoRemoved,
   getPhotoReplaced,
+  uploadBase64Image,
+  uploadBase64ImageToFileIO,
   uploadToGCS,
 } from "./requestFunctions";
 import { nanoid } from "nanoid";
+import { set } from "firebase/database";
 
 export default function Home() {
   const [stage, setStage] = useState<
     "photo" | "question" | "video" | "personal"
   >("photo");
-  const [answers, setAnswers] = useState<string>("");
+  const [answers, setAnswers] = useState<string>(`What is your name?
+What are your likes?
+Describe yourself in 20 words or less.
+Sexuality:
+Gender:`);
 
   // State for uploaded image
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,6 +33,8 @@ export default function Home() {
   const [requests, setRequests] = useState<Record<string, Asset>>({});
   const [finalPersonalVideo, setFinalPersonalVideo] = useState<string>("");
   const [finalPersonalAudio, setFinalPersonalAudio] = useState<string>("");
+
+  const [doFull, setDoFull] = useState<boolean>(false);
 
   /**
    * Handle image upload
@@ -40,6 +49,47 @@ export default function Home() {
     const file = e.target.files[0];
     setImageFile(file);
     setPreviewURL(URL.createObjectURL(file));
+  };
+
+  const test = async () => {
+    const photo = await convertToDataURL(imageFile as File);
+
+    const uploadedImage = await uploadBase64Image(
+      photo,
+      "loveIsland" + Date.now() + ".png"
+    );
+
+    console.log("uploadedImage", uploadedImage);
+
+    const ridresponse = await fetch("/api/makeKlingRequest", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt: "man doing an interview",
+        imageUrl: uploadedImage,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const ridata = await ridresponse.json();
+    const { requestId } = ridata;
+
+    console.log("rid", requestId);
+
+    const response = await fetch("/api/checkKllingRquest", {
+      method: "POST",
+      body: JSON.stringify({
+        requestId: requestId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    console.log("data", data);
   };
 
   const start = async () => {
@@ -67,17 +117,22 @@ export default function Home() {
     );
 
     //get request id
-    const rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
-    // let rid = await fetch("/api/makeKlingRequest", {
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     prompt: "man doing an interview",
-    //     imageUrl: uploadedImage,
-    //   }),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
+    //const rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
+
+    const ridresponse = await fetch("/api/makeKlingRequest", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt: "man doing an interview",
+        imageUrl: uploadedImage,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const ridata = await ridresponse.json();
+    const { requestId } = ridata;
+    const rid = requestId;
 
     await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
@@ -163,26 +218,42 @@ export default function Home() {
 
     //upload combined to gcs
 
-    const uploadedImage = await uploadToGCS(
+    // const uploadedImage = await uploadToGCS(
+    //   combined,
+    //   "love-game-show",
+    //   "photo.png"
+    // );
+
+    const uploadedImage = await uploadBase64Image(
       combined,
-      "love-game-show",
-      "photo.png"
+      "loveIsland" + Date.now() + ".png"
     );
 
-    console.log("uploadedImage", uploadedImage);
+    //const uploadedImage = await uploadBase64ImageToFileIO(combined);
+
+    // console.log("uploadedImage", uploadedImage2);
 
     //get request id
-    //const rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
-    const rid = await fetch("/api/makeKlingRequest", {
-      method: "POST",
-      body: JSON.stringify({
-        prompt: "man doing an interview",
-        imageUrl: uploadedImage,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    let rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
+
+    if (doFull) {
+      const ridresponse = await fetch("/api/makeKlingRequest", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt: "man doing an interview. talking to the camera",
+          imageUrl: uploadedImage,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const ridata = await ridresponse.json();
+      const { requestId } = ridata;
+      rid = requestId;
+    } else {
+      rid = "c8a3ec9f-1cd8-433b-ae76-f5a56469bb46";
+    }
 
     await new Promise<void>((resolve) => {
       const interval = setInterval(async () => {
@@ -274,7 +345,7 @@ export default function Home() {
         }}
       >
         <source
-          src="https://www.w3schools.com/html/mov_bbb.mp4" // Replace with your game show intro video
+          src="/island.mp4" // Replace with your game show intro video
           type="video/mp4"
         />
         Your browser does not support the video tag.
@@ -298,6 +369,20 @@ export default function Home() {
           padding: "2rem",
         }}
       >
+        <UIButton
+          className="absolute top-8 right-8 "
+          onClick={() => {
+            setDoFull(!doFull);
+          }}
+          style={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+          }}
+        >
+          {doFull ? "Do Fast" : "Do Full"}
+        </UIButton>
+
         {stage === "photo" && (
           <FlexCol className="w-full h-full">
             <h1>Upload Your Photo</h1>
@@ -332,6 +417,8 @@ export default function Home() {
               </div>
             )}
 
+            {/* <UIButton onClick={test}>test</UIButton> */}
+
             <UIButton
               onClick={() => {
                 setStage("question");
@@ -357,7 +444,7 @@ export default function Home() {
                 const response = await fetch("/api/generate_profiles", {
                   method: "POST",
                   body: JSON.stringify({
-                    questionaire: answers,
+                    questionare: answers,
                   }),
                   headers: {
                     "Content-Type": "application/json",
@@ -387,7 +474,7 @@ export default function Home() {
           <FlexCol className="w-full h-full">
             <video
               className="w-[800px]"
-              src={"/full.mp4"}
+              src={"/full2.mp4"}
               ref={videoRef}
               muted={false}
               autoPlay
