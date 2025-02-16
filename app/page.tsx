@@ -2,6 +2,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { FlexCol, UIButton } from "./UILibrary";
 import { generateVideo, GenerateVideoRequestBody } from "./generateVideoPika";
+import KlingTest from "./KlingTest";
 
 export default function Home() {
   // State for uploaded image
@@ -53,9 +54,9 @@ export default function Home() {
 
     // For model 1.0
     const requestBody: GenerateVideoRequestBody = {
-      promptText: "robed villain lurking the streets",
+      promptText: "man doing an interview",
       model: "1.0", // or omit if the default is 1.0
-      image: "https://example.image/1234-a186-53c4c6171ab5/image.jpg",
+      image: "https://aisland.vercel.app/andybg.JPG",
       sfx: true,
       style: "Anime",
       options: {
@@ -79,6 +80,23 @@ export default function Home() {
 
     const result = await generateVideo(token, requestBody);
     console.log("Video generation response:", result);
+  };
+
+  const onGenerateVideoKling = async () => {
+    //make posst request to /api/kling
+    const response = await fetch("/api/kling", {
+      method: "POST",
+      body: JSON.stringify({
+        prompt: "man doing an interview",
+        imageUrl: "https://aisland.vercel.app/andybg.JPG",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    console.log(data);
   };
 
   return (
@@ -122,7 +140,9 @@ export default function Home() {
           padding: "2rem",
         }}
       >
-        <UIButton onClick={onGenerateVideo}>Generate Video</UIButton>
+        {/* <UIButton onClick={onGenerateVideoKling}>Generate Video</UIButton> */}
+
+        <KlingTest />
 
         <h1>AI-Powered Love Game Show</h1>
         <p>Upload a photo and answer 20 questions!</p>
