@@ -206,10 +206,10 @@ async function GetJson(prompt: string, schema: any) : Promise<string> {
 
 export async function POST(req: NextRequest) {
     let profileJson = await GetJson(profilePrompt, profileSchema);
-    let profiles : Array<Record<string, any>> = <any>JSON.stringify(profileJson);
+    let profiles : Array<Record<string, any>> = <any>JSON.parse(profileJson);
     
     let interestJson = await GetJson(interestsPrompt.replace('{{JSON_PAYLOAD}}', profileJson), interestSchema);
-    let interests: Array<Record<string, any>> = <any>JSON.stringify(interestJson);
+    let interests: Array<Record<string, any>> = <any>JSON.parse(interestJson);
 
     let fullProfiles = [];
 
@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
     }
 
     let introDialogueJson = await GetJson(dialogueIntroPrompt.replace("{{JSON_PAYLOAD}}", JSON.stringify(fullProfiles, null, 2)), dialougeIntroSchema);
-    let introDialogue : Array<Record<string, any>> = <any>JSON.stringify(introDialogueJson);
+    let introDialogue : Array<Record<string, any>> = <any>JSON.parse(introDialogueJson);
 
     return NextResponse.json(
         { result: {profiles: fullProfiles, introDialogue: introDialogue } },
