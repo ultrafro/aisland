@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prefer-const */
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 

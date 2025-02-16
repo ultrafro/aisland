@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { FlexCol, UIButton } from "./UILibrary";

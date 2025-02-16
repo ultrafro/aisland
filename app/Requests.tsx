@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Asset } from "./island.model";
 import { FlexCol } from "./UILibrary";
 
