@@ -19,8 +19,8 @@ import { set } from "firebase/database";
 
 export default function Home() {
   const [stage, setStage] = useState<
-    "photo" | "question" | "video" | "personal"
-  >("photo");
+    "welcome" | "photo" | "question" | "video" | "personal"
+  >("welcome");
   const [answers, setAnswers] = useState<string>(`What is your name?
 What are your likes?
 Describe yourself in 20 words or less.
@@ -383,6 +383,27 @@ Gender:`);
         >
           {doFull ? "Do Fast" : "Do Full"}
         </UIButton>
+
+        {stage === "welcome" && (
+          <FlexCol className="w-full h-full">
+            <h1
+              style={{
+                fontSize: "4rem",
+                fontWeight: "bold",
+                marginBottom: "2rem",
+              }}
+            >
+              HIIIII
+            </h1>
+            <UIButton
+              onClick={() => {
+                setStage("photo");
+              }}
+            >
+              Get Started
+            </UIButton>
+          </FlexCol>
+        )}
 
         {stage === "photo" && (
           <FlexCol className="w-full h-full">
